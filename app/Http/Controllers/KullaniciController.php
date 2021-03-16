@@ -31,6 +31,7 @@ class KullaniciController extends Controller
         } else {
             $errors = ['email' => 'hatali giris'];
             return back()->withErrors($errors);
+            /* testtestest */
         }
     }
 
