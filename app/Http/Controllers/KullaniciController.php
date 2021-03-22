@@ -29,7 +29,7 @@ class KullaniciController extends Controller
             request()->session()->regenerate();
             return redirect()->intended('/');
         } else {
-            $errors = ['email' => 'hatali giris'];
+            $errors = ['email' => 'hatali giris']; //dinamik olarak bir hata mesajı oluşturduk
             return back()->withErrors($errors);
             /* testtestest */
         }
@@ -85,5 +85,13 @@ class KullaniciController extends Controller
                 ->with('mesaj', 'Kullanici bulunamadi') //bu sesion bilgisi gönderildikten sonra otamatik silinmektedir.
                 ->with('mesaj_tur', 'warning');
         }
+    }
+
+    public function oturumukapat()
+    {
+        auth::logout();
+        request()->session()->flush();
+        request()->session()->regenerate();
+        return redirect()->route('anasayfa');
     }
 }

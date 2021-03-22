@@ -37,6 +37,7 @@ Route::group(['prefix' => 'kullanici'], function () {
     Route::get('/kaydol', 'KullaniciController@kaydol_form')->name('kullanici.kaydol');
     Route::post('/kaydol', 'KullaniciController@kaydol');
     Route::get('/aktiflestir/{anahtar}', 'KullaniciController@aktiflestir')->name('aktiflestir');
+    Route::post('/oturumukapat', 'KullaniciController@oturumukapat')->name('kullanici.oturumukapat');
 });
 
 Auth::routes();
