@@ -23,13 +23,23 @@ Route::get('/kategori/{slug_kategoriadi}', 'KategoriController@index')->name('ka
 
 Route::get('/urun/{slug_urunadi}', 'UrunController@index')->name('urun');
 
-Route::get('/sepet', 'SepetController@index')->name('sepet');
 
-Route::get('/odeme', 'OdemeController@index')->name('odeme');
+Route::group(['prefix' => 'sepet'], function () {
+    Route::get('/', 'SepetController@index')->name('sepet');
+    Route::post('/ekle', 'SepetController@ekle')->name('sepet.ekle');
+});
 
-Route::get('/siparisler', 'SiparisController@index')->name('siparisler');
 
-Route::get('/siparisler/{id}', 'SiparisController@detay')->name('siparis');
+
+
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/odeme', 'OdemeController@index')->name('odeme');
+    Route::get('/siparisler', 'SiparisController@index')->name('siparisler');
+    Route::get('/siparisler/{id}', 'SiparisController@detay')->name('siparis');
+});
+
+
+
 
 Route::group(['prefix' => 'kullanici'], function () {
     Route::get('/oturumac', 'KullaniciController@giris_form')->name('kullanici.oturumac'); // kullanici.oturum daki nokta alt isimlendirme icin var
@@ -40,7 +50,7 @@ Route::group(['prefix' => 'kullanici'], function () {
     Route::post('/oturumukapat', 'KullaniciController@oturumukapat')->name('kullanici.oturumukapat');
 });
 
-Auth::routes();
+
 
 Route::get('/home', 'HomeController@index')->name('home');
 
