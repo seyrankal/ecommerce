@@ -33,7 +33,7 @@ class SepetController extends Controller
             ->with('mesaj', 'Urun sepete Eklendi'); */
 
         $cart = app(Cart::class);
-        $cart::add($urun->id, $urun->urun_adi, 1, $urun->fiyati);
+        $cart::add($urun->id, $urun->urun_adi, 1, $urun->fiyati, ['slug' => $urun->slug]);
         return redirect()->route('sepet')
             ->with('mesaj_tur', 'success')
             ->with('mesaj', 'Ürün sepete eklendi.');
