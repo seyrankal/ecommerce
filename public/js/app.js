@@ -14280,8 +14280,14 @@ module.exports = __webpack_require__(35);
 __webpack_require__(12);
 
 setTimeout(function () {
-  $('.alert').slideUp(500);
+    $('.alert').slideUp(500);
 }, 3000);
+
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
 
 /***/ }),
 /* 12 */

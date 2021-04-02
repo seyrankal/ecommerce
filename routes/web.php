@@ -27,6 +27,10 @@ Route::get('/urun/{slug_urunadi}', 'UrunController@index')->name('urun');
 Route::group(['prefix' => 'sepet'], function () {
     Route::get('/', 'SepetController@index')->name('sepet');
     Route::post('/ekle', 'SepetController@ekle')->name('sepet.ekle');
+    Route::delete('/kaldir/{rowid}', 'SepetController@kaldir')->name('sepet.kaldir');
+    Route::delete('/bosalt', 'SepetController@bosalt')->name('sepet.bosalt');
+    Route::patch('/guncelle/{rowid}', 'SepetController@guncelle')->name('sepet.guncelle');
+    
 });
 
 
