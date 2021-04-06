@@ -15,7 +15,7 @@ class SepetController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        /*  $this->middleware('auth'); */
     }
 
     public function index()
@@ -64,7 +64,7 @@ class SepetController extends Controller
 
     public function kaldir($rowid)
     {
-        dd($rowid);
+
         if (auth()->check()) {
             $aktif_sepet_id = session('aktif_sepet_id');
             $cart = app(Cart::class);
@@ -79,6 +79,10 @@ class SepetController extends Controller
     }
     public function bosalt()
     {
+        if (auth()->check()) {
+            $aktif_sepet_id = session('aktif_sepet_id');
+            SepetUrun::where('sepet_id', $aktif_sepet_id)->delete();
+        }
 
         $cart = app(Cart::class);
         $cart::destroy();
@@ -98,7 +102,18 @@ class SepetController extends Controller
 
             return response()->json(['success' => false]);
         }
+        if (auth()->check()) {
+            $aktif_sepet_id = session('aktif_sepet_id');
 
+            $cart = app(Cart::class);
+            $cartItem = $cart::get($rowid);
+
+            if (request('adet') == 0) {
+                SepetUrun::where('sepet_id', $aktif_sepet_id)->where('urun_id', $cartItem->id)->delete();
+            } else
+                SepetUrun::where('sepet_id', $aktif_sepet_id)->where('urun_id', $cartItem->id)
+                    ->update(['adet' => request('adet')]);
+        }
         $cart = app(Cart::class);
         $cart::update($rowid, request('adet'));
 

@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Mail\KullaniciKayitMail;
 use App\Models\Kullanici;
+use App\Models\KullaniciDetay;
+use App\Models\SepetUrun;
+use Gloudemans\Shoppingcart\CartItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Models\Sepet;
+use Cart;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -31,11 +36,44 @@ class KullaniciController extends Controller
         ]);
         if (Auth::attempt(['email' => request('email'), 'password' => request('sifre')], request()->has('benihatirla'))) {
             request()->session()->regenerate();
+
+            $aktif_sepet_id = Sepet::firstOrCreate(['kullanici_id' => auth()->id()])->id;
+            session()->put('aktif_sepet_id', $aktif_sepet_id);
+
+            $cart = app(Cart::class);
+
+
+            if ($cart::count() > 0) {
+                /*  dd('count controlune girdi'); */
+                foreach ($cart::content() as $cartItem) {
+
+                    SepetUrun::updateOrCreate(
+                        ['sepet_id' => $aktif_sepet_id, 'urun_id' => $cartItem->id],
+                        ['adet' => $cartItem->qty, 'fiyati' => $cartItem->price, 'durum' => 'Beklemede']
+
+                    );
+                }
+            }
+            $cart::destroy();
+
+            $sepetUrunler = SepetUrun::where('sepet_id', $aktif_sepet_id)->get();
+
+            foreach ($sepetUrunler as $sepetUrun) {
+
+                $cart::add(
+                    $sepetUrun->urun->id,
+                    $sepetUrun->urun->urun_adi,
+                    $sepetUrun->adet,
+                    $sepetUrun->fiyati,
+                    ['slug' => $sepetUrun->urun->slug]
+                );
+            }
+
             return redirect()->intended('/');
         } else {
-            $errors = ['email' => 'hatali giris']; //dinamik olarak bir hata mesajı oluşturduk
+            $errors = ['email' => 'Hatalı giriş'];
+
             return back()->withErrors($errors);
-            /* testtestest */
         }
     }
 
@@ -65,6 +103,8 @@ class KullaniciController extends Controller
         $kullanici_al->aktivasyon_anahtari = Str::random(60);
         $kullanici_al->aktif_mi = 0;
         $kullanici_al->save();
+
+        $kullanici_al->detay()->save(new KullaniciDetay());
 
         /*  Mail::to(request('email'))->cc()->bcc()->send(new KullaniciKayitMail($kullanici)); */
         Mail::to(request('email'))->send(new KullaniciKayitMail($kullanici_al));
