@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class KullaniciDetay extends Model
 {
     protected $table = "kullanici_detay";
-    protected $timestamps = false;
+    public $timestamps = false;
     protected $guarded = [];
 
     public function kullanici()
